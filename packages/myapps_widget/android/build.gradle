@@ -1,0 +1,39 @@
+group = 'com.yuanzhe.myapps_widget'
+version = '0.1.0'
+
+buildscript {
+    repositories { google(); mavenCentral() }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.1'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.20'
+    }
+}
+apply plugin: 'com.android.library'
+// AGP 9 supplies Kotlin; older hosts still require the Kotlin Gradle plugin.
+if (!project.hasProperty('android.builtInKotlin') ||
+        project.property('android.builtInKotlin').toString() == 'false') {
+    apply plugin: 'kotlin-android'
+}
+
+repositories { google(); mavenCentral() }
+android {
+    namespace = 'com.yuanzhe.myapps_widget'
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 24
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
+}
+dependencies {
+    // org.json on the JVM: Android's own copy is a stub in local unit tests.
+    testImplementation 'org.json:json:20240303'
+    testImplementation 'junit:junit:4.13.2'
+}

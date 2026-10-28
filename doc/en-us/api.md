@@ -1,0 +1,62 @@
+# Public API
+
+## myapps_widget_core
+
+| Declaration | Purpose |
+|---|---|
+| `widgetEnvelopeVersion` | Envelope `v` this package writes and fully reads (`1`) |
+| `WidgetEnvelope` | The envelope; `toJson`, `encode`, `fromJson` (tolerant), `extraJson` keeps unknown fields |
+| `WidgetEnvelopeStatus` | `missing`, `invalid`, `tooNew`, `ok` |
+| `WidgetEnvelopeRead.decode(raw, {expectedKind})` | Read stored text with the contract rules |
+| `WidgetKindDescriptor` | `id`, `androidProviders`, `iosKinds`, `payloadVersion`, `defaultPrivacy`; `isValidId` |
+| `WidgetPrivacy` | `normal`, `sensitive`, `hidden`; `wire`, `fromWire` |
+| `WidgetTextScale` | `min` 0.9, `max` 1.5, `defaultValue` 1.0, `step` 0.1, `divisions` 6, `clamp` |
+| `WidgetDeepLink` | `<scheme>://widget/<kind>?instance=<id>`; `toUri`, `tryParse` |
+
+## myapps_widget
+
+`package:myapps_widget/myapps_widget.dart` re-exports the core package.
+
+| Declaration | Purpose |
+|---|---|
+| `MyAppsWidgetBridge({kinds, appGroupId})` | One per app; rejects duplicate kind ids |
+| `MyAppsWidgetBridge.channelName` | `com.yuanzhe.myapps_widget/bridge` |
+| `isSupported` | Android and iOS only; every call no-ops elsewhere |
+| `envelope(kind, payload, {...})` | Build an envelope with the kind's `pv` and default privacy; pure |
+| `publish(envelope)` | Store and redraw the kind's widgets |
+| `clear(kind)` | Remove the kind's envelope and redraw |
+| `WidgetRefreshScheduler({onRefresh, delay, onError})` | `schedule`, `flush`, `cancel`, `isPending` |
+
+`publish` and `clear` throw `ArgumentError` for an unregistered kind, and `StateError` on iOS
+without `appGroupId`. The native side answers `bad_args` when the kind is missing or, on iOS, the
+App Group cannot be opened.
+
+## myapps_widget_ui
+
+| Declaration | Purpose |
+|---|---|
+| `WidgetPreviewSurface({width, height, child, padding, radius, color})` | Fixed-size, rounded, tinted, clipped preview card; `smallSide` 172, `stripHeight` 76 |
+| `WidgetTextScaleControl({value, onChanged, title, subtitle, leading})` | Title row with the percentage and a slider over `WidgetTextScale`; `percent` |
+
+## Android (Kotlin, package `com.yuanzhe.myapps_widget`)
+
+| Declaration | Purpose |
+|---|---|
+| `EnvelopeStore.read(context, kind)` | Read and decode a kind's envelope |
+| `EnvelopeStore.write`, `clear`, `key`, `prefs` | Store access; used by the plugin |
+| `EnvelopeStore.requestUpdate(context, providers)` | Broadcast `ACTION_APPWIDGET_UPDATE` to placed instances |
+| `WidgetEnvelopeRead.decode(raw, expectedKind)` | Same rules as Dart |
+| `WidgetEnvelope` | Decoded envelope; `payload` is a `JSONObject`; `sp(base)` |
+| `WidgetTextScale.clamp`, `WidgetPrivacy.fromWire` | Same rules as Dart |
+| `EnvelopeWidgetProvider` | Base provider: implement `render(context, appWidgetId, options)` |
+| `RemoteViews.setScaledTextSize(viewId, baseSp, scale)` | Scaled sp text size |
+| `WidgetLaunch.pendingIntent(context, link, requestCode)` | Tap action opening the app, optionally on a deep link |
+
+## iOS extension (`apple/MyAppsWidgetKit/MyAppsWidgetKit.swift`)
+
+| Declaration | Purpose |
+|---|---|
+| `WidgetEnvelopeStore.read(kind:appGroupId:)` | Read and decode a kind's envelope |
+| `WidgetEnvelopeRead.decode(_:expectedKind:)` | Same rules as Dart |
+| `WidgetEnvelope` | `generatedDate`, `refreshDates`, `pt(_:)`, `decodePayload(_:)` |
+| `WidgetTextScale.clamp`, `WidgetPrivacy.fromWire` | Same rules as Dart |

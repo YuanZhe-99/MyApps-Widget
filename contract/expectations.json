@@ -1,0 +1,37 @@
+{
+  "expectedKind": "demo.today",
+  "cases": {
+    "minimal.json": {
+      "status": "ok",
+      "payloadVersion": 1,
+      "generatedAt": 1767225600000,
+      "textScale": 1.0,
+      "privacy": "normal",
+      "refreshAt": [],
+      "instanceId": null
+    },
+    "full.json": {
+      "status": "ok",
+      "payloadVersion": 3,
+      "generatedAt": 1767225600000,
+      "textScale": 1.2,
+      "privacy": "sensitive",
+      "refreshAt": [1767229200000, 1767232800000],
+      "instanceId": "list-7"
+    },
+    "out_of_range.json": {
+      "status": "ok",
+      "payloadVersion": 1,
+      "generatedAt": 1767225600000,
+      "textScale": 1.5,
+      "privacy": "normal",
+      "refreshAt": [1767229200000],
+      "instanceId": null
+    },
+    "future_version.json": { "status": "tooNew" },
+    "other_kind.json": { "status": "invalid" },
+    "no_payload.json": { "status": "invalid" },
+    "not_json.json": { "status": "invalid" },
+    "array.json": { "status": "invalid" }
+  }
+}
