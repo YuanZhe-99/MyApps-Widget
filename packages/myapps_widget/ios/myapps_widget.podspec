@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'myapps_widget'
-  s.version          = '0.1.0'
+  s.version          = '0.1.1'
   s.summary          = 'Home-screen widget envelope bridge for MyApps.'
   s.description      = <<-DESC
 Answers the com.yuanzhe.myapps_widget/bridge method channel: writes one

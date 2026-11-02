@@ -16,7 +16,7 @@ In each of `packages/myapps_widget_core`, `packages/myapps_widget` and `packages
 |---|---|
 | `myapps_widget_core/test/contract_test.dart` | Every fixture in `contract/` against `expectations.json` |
 | `myapps_widget_core/test/core_test.dart` | Clamping, round trip with unknown fields, ids, privacy, deep links |
-| `myapps_widget/test/bridge_test.dart` | Channel arguments, unsupported platforms, kind checks, debounce |
+| `myapps_widget/test/bridge_test.dart` | Channel arguments, placed sizes, unsupported platforms, kind checks, debounce |
 | `myapps_widget_ui/test/ui_test.dart` | Slider percentage and clamping, preview size |
 
 ## Native checks

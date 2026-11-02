@@ -12,7 +12,7 @@ the choice of widgets stay in each application.
 | Part | Responsibility |
 |---|---|
 | `packages/myapps_widget_core` | Pure Dart: `WidgetEnvelope` and its tolerant reader, `WidgetKindDescriptor`, `WidgetPrivacy`, `WidgetTextScale`, `WidgetDeepLink`; no Flutter |
-| `packages/myapps_widget` | Flutter plugin: `MyAppsWidgetBridge` (publish and clear per kind), `WidgetRefreshScheduler` (debounce); Android and iOS native halves |
+| `packages/myapps_widget` | Flutter plugin: `MyAppsWidgetBridge` (publish and clear per kind, Android placed sizes), `WidgetRefreshScheduler` (debounce); Android and iOS native halves |
 | `packages/myapps_widget_ui` | Flutter UI: `WidgetPreviewSurface` and `WidgetTextScaleControl`; wording injected |
 | Android half (`packages/myapps_widget/android`) | `MyAppsWidgetPlugin`, `EnvelopeStore`, `WidgetEnvelopeRead`, `EnvelopeWidgetProvider`, `setScaledTextSize`, `WidgetLaunch` |
 | iOS half (`packages/myapps_widget/ios`) | `MyAppsWidgetPlugin`: writes the App Group and reloads WidgetKit timelines |

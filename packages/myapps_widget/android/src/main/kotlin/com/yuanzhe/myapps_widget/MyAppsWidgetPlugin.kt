@@ -36,10 +36,11 @@ class MyAppsWidgetPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
 
     /**
-     * Purpose: Handle `publish` and `clear`.
+     * Purpose: Handle `publish`, `clear` and `placedSizes`.
      * Inputs: `call` — `kind`, `androidProviders`, and for `publish` the `envelope` string; `result`.
-     * Returns: None; answers `result`.
-     * Side effects: Writes `EnvelopeStore` and broadcasts redraws.
+     * Returns: None; answers `result` (`placedSizes` with `EnvelopeStore.placedSizes`).
+     * Side effects: `publish` and `clear` write `EnvelopeStore` and broadcast redraws;
+     * `placedSizes` only reads.
      * Notes: A missing `kind` is a `bad_args` error; storage never throws to Dart otherwise.
      */
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -58,6 +59,7 @@ class MyAppsWidgetPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 EnvelopeStore.requestUpdate(ctx, providers)
                 result.success(null)
             }
+            "placedSizes" -> result.success(EnvelopeStore.placedSizes(ctx, providers))
             else -> result.notImplemented()
         }
     }

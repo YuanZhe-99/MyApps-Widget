@@ -12,7 +12,7 @@
 |---|---|
 | `myapps_widget_core/test/contract_test.dart` | `contract/` 中的每个夹具与 `expectations.json` 对照 |
 | `myapps_widget_core/test/core_test.dart` | 范围限定、带未知字段的往返、id、隐私、deep link |
-| `myapps_widget/test/bridge_test.dart` | 通道参数、不支持的平台、kind 检查、防抖 |
+| `myapps_widget/test/bridge_test.dart` | 通道参数、已放置尺寸、不支持的平台、kind 检查、防抖 |
 | `myapps_widget_ui/test/ui_test.dart` | 滑块百分比与范围限定、预览尺寸 |
 
 ## 原生检查

@@ -75,6 +75,50 @@ void main() {
     expect(calls, isEmpty);
   });
 
+  test('placedSizes reads instances and skips malformed ones', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+          calls.add(call);
+          return [
+            {
+              'provider': 'com.example.TodayProvider',
+              'widgetId': 7,
+              'minWidth': 231,
+              'minHeight': 140,
+              'maxWidth': 320,
+              'maxHeight': 156,
+            },
+            {'provider': 'com.example.TodayProvider', 'widgetId': 8},
+            {
+              'provider': 'com.example.TodayProvider',
+              'widgetId': 9,
+              'minWidth': 0,
+              'minHeight': 0,
+              'maxWidth': 0,
+              'maxHeight': 0,
+            },
+          ];
+        });
+    final sizes = await bridge().placedSizes('demo.today');
+    expect(calls.single.method, 'placedSizes');
+    expect((calls.single.arguments as Map)['androidProviders'], [
+      'com.example.TodayProvider',
+    ]);
+    expect(sizes.single.widgetId, 7);
+    expect(sizes.single.portrait, const Size(231, 156));
+    expect(sizes.single.landscape, const Size(320, 140));
+  });
+
+  test('placedSizes reads channel errors as empty', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          channel,
+          (call) async => throw PlatformException(code: 'boom'),
+        );
+    expect(await bridge().placedSizes('demo.today'), isEmpty);
+    expect(await bridge(supported: false).placedSizes('demo.today'), isEmpty);
+  });
+
   test('unregistered and duplicate kinds are rejected', () {
     expect(
       () => bridge().envelope('demo.other', const {}),

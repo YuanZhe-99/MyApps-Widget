@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:myapps_widget_core/myapps_widget_core.dart';
 
+import 'placed_size.dart';
+
 /// Publishes widget envelopes to the native store and redraws the widgets.
 ///
 /// One instance per app, created with every kind the app publishes. The
@@ -104,6 +106,34 @@ class MyAppsWidgetBridge {
     final descriptor = _descriptor(kind);
     if (!isSupported) return;
     await _channel.invokeMethod<void>('clear', _target(descriptor));
+  }
+
+  /// Purpose: Report the launcher-given size of every placed instance of a
+  /// kind's Android widgets.
+  /// Inputs: `kind`.
+  /// Returns: One [PlacedWidgetSize] per placed instance, in provider order;
+  /// empty when none is placed, on iOS, or on unsupported platforms.
+  /// Side effects: None.
+  /// Notes: Throws [ArgumentError] for an unregistered kind. iOS has no
+  /// equivalent query, so it never reaches the native side there. Channel
+  /// errors read as empty, so callers can always fall back to a default size.
+  Future<List<PlacedWidgetSize>> placedSizes(String kind) async {
+    final descriptor = _descriptor(kind);
+    if (!isSupported || (!kIsWeb && Platform.isIOS)) return const [];
+    try {
+      final raw = await _channel.invokeMethod<List<Object?>>(
+        'placedSizes',
+        _target(descriptor),
+      );
+      return [
+        for (final entry in raw ?? const [])
+          if (entry is Map) ?PlacedWidgetSize.fromMap(entry),
+      ];
+    } on PlatformException {
+      return const [];
+    } on MissingPluginException {
+      return const [];
+    }
   }
 
   /// Purpose: Look up a registered kind.

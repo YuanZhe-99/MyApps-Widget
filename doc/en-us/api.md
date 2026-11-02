@@ -25,6 +25,8 @@
 | `envelope(kind, payload, {...})` | Build an envelope with the kind's `pv` and default privacy; pure |
 | `publish(envelope)` | Store and redraw the kind's widgets |
 | `clear(kind)` | Remove the kind's envelope and redraw |
+| `placedSizes(kind)` | Android: launcher-given dp bounds of every placed instance of the kind's providers; empty on iOS, elsewhere, or on a channel error |
+| `PlacedWidgetSize` | `provider`, `widgetId`, `minWidth`, `minHeight`, `maxWidth`, `maxHeight` (dp); `portrait` (min width × max height), `landscape` (max width × min height); `fromMap` skips malformed or unsized entries |
 | `WidgetRefreshScheduler({onRefresh, delay, onError})` | `schedule`, `flush`, `cancel`, `isPending` |
 
 `publish` and `clear` throw `ArgumentError` for an unregistered kind, and `StateError` on iOS
@@ -45,6 +47,7 @@ App Group cannot be opened.
 | `EnvelopeStore.read(context, kind)` | Read and decode a kind's envelope |
 | `EnvelopeStore.write`, `clear`, `key`, `prefs` | Store access; used by the plugin |
 | `EnvelopeStore.requestUpdate(context, providers)` | Broadcast `ACTION_APPWIDGET_UPDATE` to placed instances |
+| `EnvelopeStore.placedSizes(context, providers)` | Size options (dp) of every placed instance; answers the `placedSizes` channel call |
 | `WidgetEnvelopeRead.decode(raw, expectedKind)` | Same rules as Dart |
 | `WidgetEnvelope` | Decoded envelope; `payload` is a `JSONObject`; `sp(base)` |
 | `WidgetTextScale.clamp`, `WidgetPrivacy.fromWire` | Same rules as Dart |

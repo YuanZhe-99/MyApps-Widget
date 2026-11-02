@@ -25,6 +25,8 @@
 | `envelope(kind, payload, {...})` | 用该 kind 的 `pv` 和默认隐私等级构建外层封装；无副作用 |
 | `publish(envelope)` | 存储并重绘该 kind 的小组件 |
 | `clear(kind)` | 删除该 kind 的外层封装并重绘 |
+| `placedSizes(kind)` | Android：该 kind 各 Provider 每个已放置实例由启动器给出的 dp 边界；在 iOS、其他平台或通道出错时为空 |
+| `PlacedWidgetSize` | `provider`、`widgetId`、`minWidth`、`minHeight`、`maxWidth`、`maxHeight`（dp）；`portrait`（最小宽 × 最大高）、`landscape`（最大宽 × 最小高）；`fromMap` 跳过格式错误或尚无尺寸的条目 |
 | `WidgetRefreshScheduler({onRefresh, delay, onError})` | `schedule`、`flush`、`cancel`、`isPending` |
 
 `publish` 和 `clear` 对未注册的 kind 抛出 `ArgumentError`，在 iOS 上缺少 `appGroupId` 时抛出 `StateError`。kind 缺失、或在 iOS 上 App Group 无法打开时，原生端返回 `bad_args`。
@@ -43,6 +45,7 @@
 | `EnvelopeStore.read(context, kind)` | 读取并解码某个 kind 的外层封装 |
 | `EnvelopeStore.write`、`clear`、`key`、`prefs` | 存储访问；由插件使用 |
 | `EnvelopeStore.requestUpdate(context, providers)` | 向已放置的实例广播 `ACTION_APPWIDGET_UPDATE` |
+| `EnvelopeStore.placedSizes(context, providers)` | 每个已放置实例的尺寸选项（dp）；响应 `placedSizes` 通道调用 |
 | `WidgetEnvelopeRead.decode(raw, expectedKind)` | 与 Dart 规则相同 |
 | `WidgetEnvelope` | 解码后的外层封装；`payload` 为 `JSONObject`；`sp(base)` |
 | `WidgetTextScale.clamp`、`WidgetPrivacy.fromWire` | 与 Dart 规则相同 |

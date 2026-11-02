@@ -9,7 +9,7 @@ MyApps-Widget 是 MyApps 系列在 Android 和 iOS 上桌面小组件的共享�
 | 部分 | 职责 |
 |---|---|
 | `packages/myapps_widget_core` | 纯 Dart：`WidgetEnvelope` 及其容错读取、`WidgetKindDescriptor`、`WidgetPrivacy`、`WidgetTextScale`、`WidgetDeepLink`；不依赖 Flutter |
-| `packages/myapps_widget` | Flutter 插件：`MyAppsWidgetBridge`（按 kind 发布和清除）、`WidgetRefreshScheduler`（防抖）；包含 Android 与 iOS 原生部分 |
+| `packages/myapps_widget` | Flutter 插件：`MyAppsWidgetBridge`（按 kind 发布和清除、Android 已放置尺寸）、`WidgetRefreshScheduler`（防抖）；包含 Android 与 iOS 原生部分 |
 | `packages/myapps_widget_ui` | Flutter 界面：`WidgetPreviewSurface` 和 `WidgetTextScaleControl`；文案由应用注入 |
 | Android 部分（`packages/myapps_widget/android`） | `MyAppsWidgetPlugin`、`EnvelopeStore`、`WidgetEnvelopeRead`、`EnvelopeWidgetProvider`、`setScaledTextSize`、`WidgetLaunch` |
 | iOS 部分（`packages/myapps_widget/ios`） | `MyAppsWidgetPlugin`：写入 App Group 并重新加载 WidgetKit 时间线 |

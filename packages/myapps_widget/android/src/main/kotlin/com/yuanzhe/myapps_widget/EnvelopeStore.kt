@@ -86,4 +86,38 @@ object EnvelopeStore {
             context.sendBroadcast(intent)
         }
     }
+
+    /**
+     * Purpose: Report the size the launcher gives every placed instance of the named providers.
+     * Inputs: `context`; `providers` — provider class names, resolved like [requestUpdate].
+     * Returns: One map per instance: `provider`, `widgetId`, and `minWidth`, `minHeight`,
+     * `maxWidth`, `maxHeight` in dp from `getAppWidgetOptions`.
+     * Side effects: None.
+     * Notes: Portrait size is `minWidth × maxHeight`, landscape `maxWidth × minHeight`. These are
+     * the dp the RemoteViews are laid out in; a launcher may still draw the result scaled.
+     * Unresolvable providers are skipped.
+     */
+    fun placedSizes(context: Context, providers: List<String>): List<Map<String, Any>> {
+        val manager = AppWidgetManager.getInstance(context)
+        val sizes = mutableListOf<Map<String, Any>>()
+        for (className in providers) {
+            val ids = try {
+                manager.getAppWidgetIds(ComponentName(context.packageName, className))
+            } catch (e: Exception) {
+                continue
+            }
+            for (id in ids) {
+                val options = manager.getAppWidgetOptions(id)
+                sizes += mapOf(
+                    "provider" to className,
+                    "widgetId" to id,
+                    "minWidth" to options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH),
+                    "minHeight" to options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT),
+                    "maxWidth" to options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH),
+                    "maxHeight" to options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT),
+                )
+            }
+        }
+        return sizes
+    }
 }

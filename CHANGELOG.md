@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1 - 2026-11-02
+
+Adds `MyAppsWidgetBridge.placedSizes(kind)` and `PlacedWidgetSize`: on Android, the dp size options
+the launcher gives every placed instance of a kind's providers (Kotlin
+`EnvelopeStore.placedSizes`, channel method `placedSizes`), so in-app previews can lay out at the
+real size. iOS has no equivalent and returns empty. The envelope contract is unchanged.
+
 ## 0.1.0 - 2026-10-28
 
 First release, extracted from MyAnime 1.9.4's home-screen widgets. Adds the envelope format
