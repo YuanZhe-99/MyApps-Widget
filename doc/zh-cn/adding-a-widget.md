@@ -30,6 +30,10 @@ final bridge = MyAppsWidgetBridge(
 await bridge.publish(bridge.envelope('example.today', {'items': []}));
 ```
 
+## 交互控件
+
+在 Android 上为控件设置 `WidgetActions.pendingIntent`，在 iOS 17+ 上使用 `Button(intent: MyAppsWidgetActionIntent(...))`；在应用中处理队列，并在渲染器中重放待处理动作；见[交互动作](actions.md)。iOS 14–16 退回使用 deep link。扩展的部署目标低于 iOS 16 时，要弱链接 `AppIntents`。
+
 ## 隐私
 
 `sensitive` 内容应在设备锁定时隐藏，并在 iOS 上标记 `privacySensitive()`；`hidden` 应绘制中性的占位内容。默认隐私等级不是 `normal` 的 kind 不要提供锁屏样式。

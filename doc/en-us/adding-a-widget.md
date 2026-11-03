@@ -39,6 +39,13 @@ final bridge = MyAppsWidgetBridge(
 await bridge.publish(bridge.envelope('example.today', {'items': []}));
 ```
 
+## Interactive controls
+
+Give a control `WidgetActions.pendingIntent` on Android or
+`Button(intent: MyAppsWidgetActionIntent(...))` on iOS 17+, drain the queue in the app, and replay
+pending actions in the renderer; see [interactive actions](actions.md). On iOS 14–16 fall back to
+a deep link. Weak-link `AppIntents` in an extension whose deployment target is below iOS 16.
+
 ## Privacy
 
 `sensitive` content should be redacted while the device is locked and marked `privacySensitive()`

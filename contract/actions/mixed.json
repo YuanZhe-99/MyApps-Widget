@@ -1,0 +1,10 @@
+[
+  {"kind": "demo.today", "action": "setDone", "at": 1767225600000},
+  {"id": "", "kind": "demo.today", "action": "setDone", "at": 1767225600000},
+  {"id": "b2", "kind": "demo.today", "action": "setDone", "at": "1767225600000"},
+  {"id": "b3", "kind": "demo.today", "action": "setDone", "at": true},
+  {"id": "b4", "kind": "demo.today", "at": 1767225600000},
+  "b5",
+  null,
+  {"id": "b6", "kind": "demo.today", "action": "start", "at": 1767225720000, "args": [1, 2], "instanceId": 7}
+]

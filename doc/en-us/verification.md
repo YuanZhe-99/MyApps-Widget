@@ -15,15 +15,16 @@ In each of `packages/myapps_widget_core`, `packages/myapps_widget` and `packages
 | Suite | Covers |
 |---|---|
 | `myapps_widget_core/test/contract_test.dart` | Every fixture in `contract/` against `expectations.json` |
+| `myapps_widget_core/test/action_contract_test.dart` | Every file in `contract/actions/` against `action_expectations.json`; queue round trip and cap |
 | `myapps_widget_core/test/core_test.dart` | Clamping, round trip with unknown fields, ids, privacy, deep links |
-| `myapps_widget/test/bridge_test.dart` | Channel arguments, placed sizes, unsupported platforms, kind checks, debounce |
+| `myapps_widget/test/bridge_test.dart` | Channel arguments, placed sizes, action queue calls, unsupported platforms, kind checks, debounce |
 | `myapps_widget_ui/test/ui_test.dart` | Slider percentage and clamping, preview size |
 
 ## Native checks
 
 | Check | Where |
 |---|---|
-| Kotlin contract test `ContractTest` | CI `android` job, `./gradlew :myapps_widget:testDebugUnitTest` in a host made by `tool/create_host.sh` |
+| Kotlin contract tests `ContractTest` and `ActionContractTest` | CI `android` job, `./gradlew :myapps_widget:testDebugUnitTest` in a host made by `tool/create_host.sh` |
 | Android compile | CI `android` job, `flutter build apk --debug` in the host |
 | Swift contract `tool/check_swift_contract.sh` | CI `apple` job (macOS) |
 | iOS plugin compile | CI `apple` job, `flutter build ios --debug --no-codesign` in the host |

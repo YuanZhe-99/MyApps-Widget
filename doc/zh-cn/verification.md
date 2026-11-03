@@ -11,15 +11,16 @@
 | 测试 | 覆盖 |
 |---|---|
 | `myapps_widget_core/test/contract_test.dart` | `contract/` 中的每个夹具与 `expectations.json` 对照 |
+| `myapps_widget_core/test/action_contract_test.dart` | `contract/actions/` 中的每个文件与 `action_expectations.json` 对照；队列往返与上限 |
 | `myapps_widget_core/test/core_test.dart` | 范围限定、带未知字段的往返、id、隐私、deep link |
-| `myapps_widget/test/bridge_test.dart` | 通道参数、已放置尺寸、不支持的平台、kind 检查、防抖 |
+| `myapps_widget/test/bridge_test.dart` | 通道参数、已放置尺寸、动作队列调用、不支持的平台、kind 检查、防抖 |
 | `myapps_widget_ui/test/ui_test.dart` | 滑块百分比与范围限定、预览尺寸 |
 
 ## 原生检查
 
 | 检查 | 位置 |
 |---|---|
-| Kotlin 约定测试 `ContractTest` | CI `android` 任务，在 `tool/create_host.sh` 生成的宿主中运行 `./gradlew :myapps_widget:testDebugUnitTest` |
+| Kotlin 约定测试 `ContractTest` 和 `ActionContractTest` | CI `android` 任务，在 `tool/create_host.sh` 生成的宿主中运行 `./gradlew :myapps_widget:testDebugUnitTest` |
 | Android 编译 | CI `android` 任务，在宿主中运行 `flutter build apk --debug` |
 | Swift 约定 `tool/check_swift_contract.sh` | CI `apple` 任务（macOS） |
 | iOS 插件编译 | CI `apple` 任务，在宿主中运行 `flutter build ios --debug --no-codesign` |

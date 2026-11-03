@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0 - 2026-11-03
+
+Adds interactive widgets through a pending-action queue. Native controls append a `WidgetAction`
+(`id`, `kind`, `action`, `at`, `args`, `instanceId`) to one device-local JSON array (Android
+preferences key `actions`, iOS App Group key `myapps_widget.actions`): on Android with
+`WidgetActions.pendingIntent` and the plugin's `WidgetActionReceiver`, on iOS 17+ with
+`MyAppsWidgetActionIntent`. The app reads them with `MyAppsWidgetBridge.pendingActions`, removes
+applied ones with `acknowledgeActions`, and hears about new ones through
+`setActionsQueuedListener`. Renderers can replay pending actions with `WidgetActionQueue.pending`.
+The queue reading rules are checked in Dart, Kotlin and Swift against the new
+`contract/actions/` fixtures. The envelope contract is unchanged.
+
 ## 0.1.1 - 2026-11-02
 
 Adds `MyAppsWidgetBridge.placedSizes(kind)` and `PlacedWidgetSize`: on Android, the dp size options

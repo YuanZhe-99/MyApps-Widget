@@ -1,0 +1,13 @@
+{
+  "cases": {
+    "valid.json": [
+      {"id": "a1", "kind": "demo.today", "action": "setDone", "at": 1767225600000, "args": {"id": "task-1", "done": true}, "instanceId": null},
+      {"id": "a2", "kind": "demo.timer", "action": "add", "at": 1767225660000, "args": {"n": 100}, "instanceId": "list-7"}
+    ],
+    "mixed.json": [
+      {"id": "b6", "kind": "demo.today", "action": "start", "at": 1767225720000, "args": {}, "instanceId": null}
+    ],
+    "not_array.json": [],
+    "not_json.json": []
+  }
+}

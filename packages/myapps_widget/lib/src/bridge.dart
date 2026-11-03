@@ -136,6 +136,80 @@ class MyAppsWidgetBridge {
     }
   }
 
+  /// Purpose: Read the taps queued by interactive widget controls.
+  /// Inputs: Optional `kind` to keep only that kind's actions.
+  /// Returns: The queued actions of registered kinds, oldest first; empty on
+  /// unsupported platforms, on channel errors, or when nothing is queued.
+  /// Side effects: Reads the native queue; does not remove anything.
+  /// Notes: Apply each action, publish the updated envelope, then call
+  /// [acknowledgeActions] with the applied ids, so a crash in between
+  /// re-delivers instead of losing a tap. Throws [StateError] on iOS without
+  /// [appGroupId]. See `doc/en-us/actions.md`.
+  Future<List<WidgetAction>> pendingActions({String? kind}) async {
+    if (kind != null) _descriptor(kind);
+    if (!isSupported) return const [];
+    final target = _queueTarget();
+    try {
+      final raw = await _channel.invokeMethod<String>('pendingActions', target);
+      return [
+        for (final action in WidgetActionQueue.decode(raw))
+          if (kinds.containsKey(action.kind) &&
+              (kind == null || action.kind == kind))
+            action,
+      ];
+    } on PlatformException {
+      return const [];
+    } on MissingPluginException {
+      return const [];
+    }
+  }
+
+  /// Purpose: Remove applied actions from the native queue.
+  /// Inputs: `ids` — [WidgetAction.id] values.
+  /// Returns: Completes when removed.
+  /// Side effects: Rewrites the native queue without those ids.
+  /// Notes: Unknown ids are ignored; an empty list sends nothing.
+  Future<void> acknowledgeActions(Iterable<String> ids) async {
+    final list = ids.toList();
+    if (list.isEmpty || !isSupported) return;
+    await _channel.invokeMethod<void>('acknowledgeActions', {
+      ..._queueTarget(),
+      'ids': list,
+    });
+  }
+
+  /// Purpose: Be told when a widget control queues an action while the app
+  /// is running.
+  /// Inputs: `listener`, or null to stop listening.
+  /// Returns: None.
+  /// Side effects: Installs (or removes) the channel's incoming-call handler.
+  /// Notes: The native side calls `actionsQueued` after appending; the app
+  /// should then call [pendingActions]. A suspended iOS app is not woken, so
+  /// also drain on start and resume.
+  void setActionsQueuedListener(void Function()? listener) {
+    if (!isSupported) return;
+    _channel.setMethodCallHandler(
+      listener == null
+          ? null
+          : (call) async {
+              if (call.method == 'actionsQueued') listener();
+              return null;
+            },
+    );
+  }
+
+  /// Purpose: Build the channel arguments for queue calls.
+  /// Inputs: None.
+  /// Returns: The argument map with [appGroupId].
+  /// Side effects: None.
+  /// Notes: Throws [StateError] on iOS without [appGroupId].
+  Map<String, Object?> _queueTarget() {
+    if (!kIsWeb && Platform.isIOS && appGroupId == null) {
+      throw StateError('MyAppsWidgetBridge needs appGroupId on iOS');
+    }
+    return {'appGroupId': appGroupId};
+  }
+
   /// Purpose: Look up a registered kind.
   /// Inputs: `kind`.
   /// Returns: Its descriptor.

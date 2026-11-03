@@ -12,6 +12,8 @@
 | `WidgetPrivacy` | `normal`、`sensitive`、`hidden`；`wire`、`fromWire` |
 | `WidgetTextScale` | `min` 0.9、`max` 1.5、`defaultValue` 1.0、`step` 0.1、`divisions` 6、`clamp` |
 | `WidgetDeepLink` | `<scheme>://widget/<kind>?instance=<id>`；`toUri`、`tryParse` |
+| `WidgetAction` | 一次排队的点击：`id`、`kind`、`action`、`at`、`args`、`instanceId`；`toJson`、`fromJson`（容错） |
+| `WidgetActionQueue` | `decode(raw)`、`encode(actions)`、`maxLength` 200；见[交互动作](actions.md) |
 
 ## myapps_widget
 
@@ -27,6 +29,9 @@
 | `clear(kind)` | 删除该 kind 的外层封装并重绘 |
 | `placedSizes(kind)` | Android：该 kind 各 Provider 每个已放置实例由启动器给出的 dp 边界；在 iOS、其他平台或通道出错时为空 |
 | `PlacedWidgetSize` | `provider`、`widgetId`、`minWidth`、`minHeight`、`maxWidth`、`maxHeight`（dp）；`portrait`（最小宽 × 最大高）、`landscape`（最大宽 × 最小高）；`fromMap` 跳过格式错误或尚无尺寸的条目 |
+| `pendingActions({kind})` | 已注册 kind 的排队动作，从旧到新；在其他平台或通道出错时为空 |
+| `acknowledgeActions(ids)` | 从队列中移除已应用的动作 |
+| `setActionsQueuedListener(listener)` | 应用运行期间小组件控件排入动作时被调用 |
 | `WidgetRefreshScheduler({onRefresh, delay, onError})` | `schedule`、`flush`、`cancel`、`isPending` |
 
 `publish` 和 `clear` 对未注册的 kind 抛出 `ArgumentError`，在 iOS 上缺少 `appGroupId` 时抛出 `StateError`。kind 缺失、或在 iOS 上 App Group 无法打开时，原生端返回 `bad_args`。
@@ -52,6 +57,9 @@
 | `EnvelopeWidgetProvider` | Provider 基类：实现 `render(context, appWidgetId, options)` |
 | `RemoteViews.setScaledTextSize(viewId, baseSp, scale)` | 按倍数设置 sp 字号 |
 | `WidgetLaunch.pendingIntent(context, link, requestCode)` | 打开应用的点击动作，可带 deep link |
+| `WidgetActions.pendingIntent(context, kind, action, args, providers, requestCode, instanceId)` | 不打开应用、只排入一个应用动作的点击动作 |
+| `WidgetActionQueue.pending(context, kind)`、`append`、`remove`、`raw`、`decode` | 待处理动作队列；读取规则与 Dart 相同 |
+| `WidgetActionReceiver` | 由插件 manifest 声明；排入点击、重绘并通知正在运行的应用 |
 
 ## iOS 扩展（`apple/MyAppsWidgetKit/MyAppsWidgetKit.swift`）
 
@@ -61,3 +69,5 @@
 | `WidgetEnvelopeRead.decode(_:expectedKind:)` | 与 Dart 规则相同 |
 | `WidgetEnvelope` | `generatedDate`、`refreshDates`、`pt(_:)`、`decodePayload(_:)` |
 | `WidgetTextScale.clamp`、`WidgetPrivacy.fromWire` | 与 Dart 规则相同 |
+| `WidgetActionQueue.pending(kind:appGroupId:)`、`append(...)`、`decode(_:)` | 待处理动作队列；读取规则与 Dart 相同 |
+| `MyAppsWidgetActionIntent(kind:action:args:appGroupId:)` | 用于 `Button(intent:)` 的 iOS 17+ intent；排入动作并通知正在运行的应用 |

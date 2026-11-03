@@ -38,4 +38,24 @@ for (name, want) in cases.sorted(by: { $0.key < $1.key }) {
 }
 check(WidgetEnvelopeRead.decode(nil).status == .missing, "nil input")
 check(WidgetEnvelopeRead.decode("").status == .missing, "empty input")
-print("Swift contract verified: \(cases.count) fixtures")
+
+let actionData = try! Data(contentsOf: root.appendingPathComponent("action_expectations.json"))
+let actionCases =
+  (try! JSONSerialization.jsonObject(with: actionData) as! [String: Any])["cases"] as! [String: [[String: Any]]]
+let actionFiles = Set(try! FileManager.default.contentsOfDirectory(atPath: root.appendingPathComponent("actions").path))
+check(actionFiles == Set(actionCases.keys), "action fixtures and expectations differ")
+for (name, want) in actionCases.sorted(by: { $0.key < $1.key }) {
+  let raw = try! String(contentsOf: root.appendingPathComponent("actions/\(name)"), encoding: .utf8)
+  let read = WidgetActionQueue.decode(raw)
+  check(read.count == want.count, "\(name): count \(read.count)")
+  for (a, w) in zip(read, want) {
+    check(a.id == w["id"] as! String, "\(name): id")
+    check(a.kind == w["kind"] as! String, "\(name): kind")
+    check(a.action == w["action"] as! String, "\(name): action")
+    check(a.at == (w["at"] as! NSNumber).int64Value, "\(name): at")
+    check(NSDictionary(dictionary: a.args).isEqual(to: w["args"] as! [String: Any]), "\(name): args")
+    check(a.instanceId == w["instanceId"] as? String, "\(name): instanceId")
+  }
+}
+check(WidgetActionQueue.decode(nil).isEmpty, "nil queue")
+print("Swift contract verified: \(cases.count) fixtures, \(actionCases.count) action fixtures")

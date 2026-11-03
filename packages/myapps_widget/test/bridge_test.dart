@@ -119,6 +119,50 @@ void main() {
     expect(await bridge(supported: false).placedSizes('demo.today'), isEmpty);
   });
 
+  test('pendingActions decodes the queue and keeps registered kinds', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+          calls.add(call);
+          return jsonEncode([
+            {'id': 'a', 'kind': 'demo.today', 'action': 'setDone', 'at': 5},
+            {'id': 'b', 'kind': 'other.kind', 'action': 'x', 'at': 6},
+            {'id': 'c', 'kind': 'demo.today', 'action': 'start'},
+          ]);
+        });
+    final actions = await bridge().pendingActions();
+    expect(calls.single.method, 'pendingActions');
+    expect((calls.single.arguments as Map)['appGroupId'], 'group.demo');
+    expect(actions.map((a) => a.id), ['a']);
+    expect(await bridge(supported: false).pendingActions(), isEmpty);
+    expect(
+      () => bridge().pendingActions(kind: 'demo.other'),
+      throwsArgumentError,
+    );
+  });
+
+  test('acknowledgeActions sends ids and skips empty lists', () async {
+    await bridge().acknowledgeActions(const []);
+    expect(calls, isEmpty);
+    await bridge().acknowledgeActions(const ['a', 'b']);
+    expect(calls.single.method, 'acknowledgeActions');
+    expect((calls.single.arguments as Map)['ids'], ['a', 'b']);
+  });
+
+  test('actionsQueued reaches the listener', () async {
+    var told = 0;
+    bridge().setActionsQueuedListener(() => told++);
+    await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .handlePlatformMessage(
+          MyAppsWidgetBridge.channelName,
+          const StandardMethodCodec().encodeMethodCall(
+            const MethodCall('actionsQueued'),
+          ),
+          (_) {},
+        );
+    expect(told, 1);
+    bridge().setActionsQueuedListener(null);
+  });
+
   test('unregistered and duplicate kinds are rejected', () {
     expect(
       () => bridge().envelope('demo.other', const {}),

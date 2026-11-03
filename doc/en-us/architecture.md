@@ -11,12 +11,12 @@ the choice of widgets stay in each application.
 
 | Part | Responsibility |
 |---|---|
-| `packages/myapps_widget_core` | Pure Dart: `WidgetEnvelope` and its tolerant reader, `WidgetKindDescriptor`, `WidgetPrivacy`, `WidgetTextScale`, `WidgetDeepLink`; no Flutter |
+| `packages/myapps_widget_core` | Pure Dart: `WidgetEnvelope` and its tolerant reader, `WidgetKindDescriptor`, `WidgetPrivacy`, `WidgetTextScale`, `WidgetDeepLink`, `WidgetAction` and `WidgetActionQueue`; no Flutter |
 | `packages/myapps_widget` | Flutter plugin: `MyAppsWidgetBridge` (publish and clear per kind, Android placed sizes), `WidgetRefreshScheduler` (debounce); Android and iOS native halves |
 | `packages/myapps_widget_ui` | Flutter UI: `WidgetPreviewSurface` and `WidgetTextScaleControl`; wording injected |
-| Android half (`packages/myapps_widget/android`) | `MyAppsWidgetPlugin`, `EnvelopeStore`, `WidgetEnvelopeRead`, `EnvelopeWidgetProvider`, `setScaledTextSize`, `WidgetLaunch` |
-| iOS half (`packages/myapps_widget/ios`) | `MyAppsWidgetPlugin`: writes the App Group and reloads WidgetKit timelines |
-| `apple/MyAppsWidgetKit` | Reader for WidgetKit extensions, compiled into the app's extension target; no Flutter |
+| Android half (`packages/myapps_widget/android`) | `MyAppsWidgetPlugin`, `EnvelopeStore`, `WidgetEnvelopeRead`, `EnvelopeWidgetProvider`, `setScaledTextSize`, `WidgetLaunch`, `WidgetActions`, `WidgetActionQueue`, `WidgetActionReceiver` |
+| iOS half (`packages/myapps_widget/ios`) | `MyAppsWidgetPlugin`: writes the App Group, reloads WidgetKit timelines, hands over the action queue |
+| `apple/MyAppsWidgetKit` | Reader and action queue for WidgetKit extensions, plus `MyAppsWidgetActionIntent` (iOS 17+), compiled into the app's extension target; no Flutter |
 | `contract/` | Fixtures and expectations that the Dart, Kotlin and Swift readers must agree on |
 
 Dependencies point one way: `myapps_widget → myapps_widget_core` and
@@ -59,8 +59,9 @@ One envelope per kind: publishing one kind never rewrites or redraws another kin
 - **Kinds are data.** A new widget is a new `WidgetKindDescriptor`, payload builder and native
   renderer; the package does not change.
 - **Reserved fields.** `refreshAt`, `instanceId` and `privacy` are carried and read on all three
-  platforms. Scheduling redraws from `refreshAt` on Android, configurable widgets and interactive
-  actions are not implemented yet; see [the roadmap](#roadmap).
+  platforms. Scheduling redraws from `refreshAt` on Android and configurable widgets are not
+  implemented yet; see [the roadmap](#roadmap). Interactive controls use the separate
+  [pending-action queue](actions.md).
 - **Namespaced storage.** Keys and the preferences file carry the `myapps_widget` prefix; the App
   Group comes from the app, and the package hard-codes no app identifier.
 
@@ -71,8 +72,9 @@ One envelope per kind: publishing one kind never rewrites or redraws another kin
 | Envelope, kinds, privacy field, text scale, deep links | Done in 0.1.0 |
 | Android redraw from `refreshAt` (inexact alarms) | Reserved field only |
 | Configurable widgets (`instanceId` from AppIntent or a configure activity) | Reserved field only |
-| Interactive widgets (a pending-action queue the app drains on its next run) | Planned |
+| Interactive widgets (a pending-action queue the app drains on its next run) | Done in 0.2.0 |
 | Shared Android drawables and SwiftUI components | Planned |
 
 See [the envelope format](envelope.md), [the public API](api.md),
-[adding a widget](adding-a-widget.md) and [verification](verification.md).
+[interactive actions](actions.md), [adding a widget](adding-a-widget.md) and
+[verification](verification.md).

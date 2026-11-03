@@ -1,1 +1,12 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Queues taps on interactive widget controls; see doc/en-us/actions.md. -->
+        <receiver
+            android:name="com.yuanzhe.myapps_widget.WidgetActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.yuanzhe.myapps_widget.ACTION" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

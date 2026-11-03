@@ -12,6 +12,8 @@
 | `WidgetPrivacy` | `normal`, `sensitive`, `hidden`; `wire`, `fromWire` |
 | `WidgetTextScale` | `min` 0.9, `max` 1.5, `defaultValue` 1.0, `step` 0.1, `divisions` 6, `clamp` |
 | `WidgetDeepLink` | `<scheme>://widget/<kind>?instance=<id>`; `toUri`, `tryParse` |
+| `WidgetAction` | One queued tap: `id`, `kind`, `action`, `at`, `args`, `instanceId`; `toJson`, `fromJson` (tolerant) |
+| `WidgetActionQueue` | `decode(raw)`, `encode(actions)`, `maxLength` 200; see [interactive actions](actions.md) |
 
 ## myapps_widget
 
@@ -27,6 +29,9 @@
 | `clear(kind)` | Remove the kind's envelope and redraw |
 | `placedSizes(kind)` | Android: launcher-given dp bounds of every placed instance of the kind's providers; empty on iOS, elsewhere, or on a channel error |
 | `PlacedWidgetSize` | `provider`, `widgetId`, `minWidth`, `minHeight`, `maxWidth`, `maxHeight` (dp); `portrait` (min width × max height), `landscape` (max width × min height); `fromMap` skips malformed or unsized entries |
+| `pendingActions({kind})` | Queued actions of registered kinds, oldest first; empty elsewhere or on a channel error |
+| `acknowledgeActions(ids)` | Remove applied actions from the queue |
+| `setActionsQueuedListener(listener)` | Called when a widget control queues an action while the app runs |
 | `WidgetRefreshScheduler({onRefresh, delay, onError})` | `schedule`, `flush`, `cancel`, `isPending` |
 
 `publish` and `clear` throw `ArgumentError` for an unregistered kind, and `StateError` on iOS
@@ -54,6 +59,9 @@ App Group cannot be opened.
 | `EnvelopeWidgetProvider` | Base provider: implement `render(context, appWidgetId, options)` |
 | `RemoteViews.setScaledTextSize(viewId, baseSp, scale)` | Scaled sp text size |
 | `WidgetLaunch.pendingIntent(context, link, requestCode)` | Tap action opening the app, optionally on a deep link |
+| `WidgetActions.pendingIntent(context, kind, action, args, providers, requestCode, instanceId)` | Tap action queuing an app action without opening the app |
+| `WidgetActionQueue.pending(context, kind)`, `append`, `remove`, `raw`, `decode` | The pending-action queue; same reading rules as Dart |
+| `WidgetActionReceiver` | Declared by the plugin manifest; queues taps, redraws and notifies a running app |
 
 ## iOS extension (`apple/MyAppsWidgetKit/MyAppsWidgetKit.swift`)
 
@@ -63,3 +71,5 @@ App Group cannot be opened.
 | `WidgetEnvelopeRead.decode(_:expectedKind:)` | Same rules as Dart |
 | `WidgetEnvelope` | `generatedDate`, `refreshDates`, `pt(_:)`, `decodePayload(_:)` |
 | `WidgetTextScale.clamp`, `WidgetPrivacy.fromWire` | Same rules as Dart |
+| `WidgetActionQueue.pending(kind:appGroupId:)`, `append(...)`, `decode(_:)` | The pending-action queue; same reading rules as Dart |
+| `MyAppsWidgetActionIntent(kind:action:args:appGroupId:)` | iOS 17+ intent for `Button(intent:)`; queues the action and notifies a running app |

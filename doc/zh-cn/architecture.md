@@ -8,12 +8,12 @@ MyApps-Widget 是 MyApps 系列在 Android 和 iOS 上桌面小组件的共享�
 
 | 部分 | 职责 |
 |---|---|
-| `packages/myapps_widget_core` | 纯 Dart：`WidgetEnvelope` 及其容错读取、`WidgetKindDescriptor`、`WidgetPrivacy`、`WidgetTextScale`、`WidgetDeepLink`；不依赖 Flutter |
+| `packages/myapps_widget_core` | 纯 Dart：`WidgetEnvelope` 及其容错读取、`WidgetKindDescriptor`、`WidgetPrivacy`、`WidgetTextScale`、`WidgetDeepLink`、`WidgetAction` 和 `WidgetActionQueue`；不依赖 Flutter |
 | `packages/myapps_widget` | Flutter 插件：`MyAppsWidgetBridge`（按 kind 发布和清除、Android 已放置尺寸）、`WidgetRefreshScheduler`（防抖）；包含 Android 与 iOS 原生部分 |
 | `packages/myapps_widget_ui` | Flutter 界面：`WidgetPreviewSurface` 和 `WidgetTextScaleControl`；文案由应用注入 |
-| Android 部分（`packages/myapps_widget/android`） | `MyAppsWidgetPlugin`、`EnvelopeStore`、`WidgetEnvelopeRead`、`EnvelopeWidgetProvider`、`setScaledTextSize`、`WidgetLaunch` |
-| iOS 部分（`packages/myapps_widget/ios`） | `MyAppsWidgetPlugin`：写入 App Group 并重新加载 WidgetKit 时间线 |
-| `apple/MyAppsWidgetKit` | 供 WidgetKit 扩展使用的读取端，编译进应用的扩展 target；不依赖 Flutter |
+| Android 部分（`packages/myapps_widget/android`） | `MyAppsWidgetPlugin`、`EnvelopeStore`、`WidgetEnvelopeRead`、`EnvelopeWidgetProvider`、`setScaledTextSize`、`WidgetLaunch`、`WidgetActions`、`WidgetActionQueue`、`WidgetActionReceiver` |
+| iOS 部分（`packages/myapps_widget/ios`） | `MyAppsWidgetPlugin`：写入 App Group、重新加载 WidgetKit 时间线、交出动作队列 |
+| `apple/MyAppsWidgetKit` | 供 WidgetKit 扩展使用的读取端和动作队列，以及 `MyAppsWidgetActionIntent`（iOS 17+），编译进应用的扩展 target；不依赖 Flutter |
 | `contract/` | Dart、Kotlin、Swift 三个读取端必须一致解读的夹具和预期结果 |
 
 依赖单向：`myapps_widget → myapps_widget_core`，`myapps_widget_ui → myapps_widget_core`。界面包从不依赖插件，因此预览可以在没有原生代码的情况下构建和测试。
@@ -40,7 +40,7 @@ MyApps-Widget 是 MyApps 系列在 Android 和 iOS 上桌面小组件的共享�
 - **两层版本。** 外层封装的 `v` 归本包所有；payload 的 `pv` 归应用所有。修改 payload 永远不需要本包发新版本。
 - **读取端容错。** 未知字段被忽略（Dart 写入端会保留），缺失字段取默认值，数值被限定范围；更高的 `v` 读作 `tooNew`，小组件可以提示用户打开应用，而不是去猜。
 - **kind 是数据。** 新增一个小组件只需一个新的 `WidgetKindDescriptor`、payload 构建函数和原生渲染；本包无需改动。
-- **预留字段。** `refreshAt`、`instanceId` 和 `privacy` 在三个平台上都会携带并读取。Android 依据 `refreshAt` 定时重绘、配置型小组件和交互动作尚未实现；见[路线图](#路线图)。
+- **预留字段。** `refreshAt`、`instanceId` 和 `privacy` 在三个平台上都会携带并读取。Android 依据 `refreshAt` 定时重绘和配置型小组件尚未实现；见[路线图](#路线图)。交互控件使用独立的[待处理动作队列](actions.md)。
 - **存储命名隔离。** 键和 preferences 文件都带 `myapps_widget` 前缀；App Group 由应用提供，本包不写死任何应用标识。
 
 ## 路线图
@@ -50,7 +50,7 @@ MyApps-Widget 是 MyApps 系列在 Android 和 iOS 上桌面小组件的共享�
 | 外层封装、kind、隐私字段、字号倍数、deep link | 0.1.0 已完成 |
 | Android 依据 `refreshAt` 重绘（非精确闹钟） | 仅预留字段 |
 | 配置型小组件（`instanceId` 来自 AppIntent 或 configure activity） | 仅预留字段 |
-| 交互型小组件（待处理动作队列，由应用下次运行时消费） | 计划中 |
+| 交互型小组件（待处理动作队列，由应用下次运行时消费） | 0.2.0 已完成 |
 | 共享的 Android drawable 和 SwiftUI 组件 | 计划中 |
 
-见[外层封装格式](envelope.md)、[公开 API](api.md)、[新增小组件](adding-a-widget.md)和[验证](verification.md)。
+见[外层封装格式](envelope.md)、[公开 API](api.md)、[交互动作](actions.md)、[新增小组件](adding-a-widget.md)和[验证](verification.md)。
